@@ -1,0 +1,17 @@
+version: '3'
+services:
+  mysqldb:
+    image: mysql
+    environment:
+      - MYSQL_USER=sophos
+      - MYSQL_ROOT_PASSWORD=sophos
+      - MYSQL_DATABASE=project_sophos
+    expose:
+      - "3306"
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database:/var/lib/mysql
+
+volumes:
+  logvolume01: {}
