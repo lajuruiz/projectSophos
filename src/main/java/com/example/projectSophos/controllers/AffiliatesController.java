@@ -2,7 +2,6 @@ package com.example.projectSophos.controllers;
 
 
 import com.example.projectSophos.entities.Affiliates;
-import com.example.projectSophos.entities.Tests;
 import com.example.projectSophos.services.AffiliatesService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -12,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")

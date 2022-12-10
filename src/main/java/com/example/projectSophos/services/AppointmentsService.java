@@ -37,14 +37,14 @@ public class AppointmentsService {
         Optional<Tests> test = testsRepository.findById(testId);
 
         if(test.isEmpty()){
-            throw new WrongForeignIdException("test_id = '" + testId + "' does not exist");
+            throw new WrongForeignIdException("test_id = '" + testId + "' does not exist", "test");
         }
 
         int affiliateId = appointments.getAffiliate().getId();
         Optional<Affiliates> affiliate = affiliatesRepository.findById(affiliateId);
 
         if(affiliate.isEmpty()){
-            throw new WrongForeignIdException("affiliate_id = '" + affiliateId + "' does not exist");
+            throw new WrongForeignIdException("affiliate_id = '" + affiliateId + "' does not exist", "affiliate");
         }
 
         appointments.setTest(test.get());

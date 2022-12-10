@@ -21,12 +21,6 @@ import java.util.Optional;
 @RequestMapping("/api")
 public class AppointmentsController {
 
-    @ExceptionHandler(WrongForeignIdException.class)
-    @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    public String handleWrongForeignIdError(WrongForeignIdException ex) {
-        return ex.getMessage();
-    }
-
     @Autowired
     AppointmentsService appointmentsService;
 
