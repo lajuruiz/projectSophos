@@ -3,6 +3,7 @@ package com.example.projectSophos.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "affiliates")
@@ -18,7 +19,7 @@ public class Affiliates {
     private String name;
 
     @Column(name="age")
-    @NotBlank
+    @NotNull
     private Integer age;
 
     @Column(name="mail")

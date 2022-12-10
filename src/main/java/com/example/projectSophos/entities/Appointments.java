@@ -3,6 +3,7 @@ package com.example.projectSophos.entities;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
@@ -19,23 +20,23 @@ public class Appointments {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     @Column(name="date")
     @Temporal(TemporalType.DATE)
-    @NotBlank
+    @NotNull
     private Date date;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "hh:mm")
     @Column(name="hour")
     @Temporal(TemporalType.TIMESTAMP)
-    @NotBlank
+    @NotNull
     private Date hour;
 
     @ManyToOne
     @JoinColumn(name="id_test", referencedColumnName="id")
-    @NotBlank
+    @NotNull
     private Tests test;
 
     @ManyToOne
     @JoinColumn(name="id_affiliate", referencedColumnName="id")
-    @NotBlank
+    @NotNull
     private Affiliates affiliate;
 
 

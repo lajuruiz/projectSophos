@@ -2,16 +2,19 @@ package com.example.projectSophos.controllers;
 
 import com.example.projectSophos.entities.Appointments;
 import com.example.projectSophos.exceptions.WrongForeignIdException;
+import com.example.projectSophos.serializers.AppointmentsCount;
 import com.example.projectSophos.services.AffiliatesService;
 import com.example.projectSophos.services.AppointmentsService;
 import com.example.projectSophos.services.TestsService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,11 +60,31 @@ public class AppointmentsController {
         return ResponseEntity.of(appointmentsService.updateAppointments(id, appointmentDetails));
     }
 
-
     @RequestMapping(value="/appointments/{appointmentsId}", method=RequestMethod.DELETE)
     public void deleteAppointments(@PathVariable(value = "appointmentsId") Integer id) {
         appointmentsService.deleteAppointments(id);
     }
 
+    @RequestMapping(value="/appointments/getByDate/{date}", method=RequestMethod.GET)
+    public List<AppointmentsCount> getByDate(
+        @PathVariable(value = "date") @DateTimeFormat(pattern = "dd-MM-yyyy")Date date, HttpServletResponse response
+    ) {
+        List<AppointmentsCount> listAppointments = appointmentsService.getByDate(date);
+
+        if(listAppointments.size() == 0){
+            response.setStatus(HttpStatus.NO_CONTENT.value());
+        }
+        return listAppointments;
+    }
+
+    @RequestMapping(value="/appointments/getByAffiliate/{affiliateId}", method=RequestMethod.GET)
+    public List<Appointments> getByAffiliate(@PathVariable(value = "affiliateId") Integer affiliateId, HttpServletResponse response) {
+        List<Appointments> listAppointments = this.appointmentsService.getByAffiliateId(affiliateId);
+
+        if(listAppointments.size() == 0){
+            response.setStatus(HttpStatus.NO_CONTENT.value());
+        }
+        return listAppointments;
+    }
 
 }
