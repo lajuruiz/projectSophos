@@ -3,9 +3,7 @@ package com.example.projectSophos.controllers;
 import com.example.projectSophos.entities.Appointments;
 import com.example.projectSophos.exceptions.WrongForeignIdException;
 import com.example.projectSophos.serializers.AppointmentsCount;
-import com.example.projectSophos.services.AffiliatesService;
 import com.example.projectSophos.services.AppointmentsService;
-import com.example.projectSophos.services.TestsService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,20 +21,22 @@ import java.util.Optional;
 @RequestMapping("/api")
 public class AppointmentsController {
 
+    @ExceptionHandler(WrongForeignIdException.class)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    public String handleWrongForeignIdError(WrongForeignIdException ex) {
+        return ex.getMessage();
+    }
+
     @Autowired
     AppointmentsService appointmentsService;
-    @Autowired
-    AffiliatesService affiliatesService;
-    @Autowired
-    TestsService testsService;
 
     @GetMapping(value="/appointments")
-    public List<Appointments> getList(HttpServletResponse response) {
+    public ResponseEntity<List<Appointments>> getList(HttpServletResponse response) {
         List<Appointments> listAppointments = appointmentsService.getAppointments();
         if(listAppointments.size() == 0){
-            response.setStatus(HttpStatus.NO_CONTENT.value());
+            return new ResponseEntity<>(listAppointments, HttpStatus.NO_CONTENT);
         }
-        return listAppointments;
+        return new ResponseEntity<>(listAppointments, HttpStatus.OK);
     }
 
     @GetMapping(value="/appointments/{appointmentsId}")
@@ -45,11 +45,32 @@ public class AppointmentsController {
         return ResponseEntity.of(appointments);
     }
 
+    @GetMapping(value="/appointments/getByDate/{date}")
+    public ResponseEntity<List<AppointmentsCount>> getByDate(
+            @PathVariable(value = "date") @DateTimeFormat(pattern = "dd-MM-yyyy")Date date, HttpServletResponse response
+    ) {
+        List<AppointmentsCount> listAppointments = appointmentsService.getByDate(date);
+
+        if(listAppointments.size() == 0){
+            return new ResponseEntity<>(listAppointments, HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(listAppointments, HttpStatus.OK);
+    }
+
+    @GetMapping(value="/appointments/getByAffiliate/{affiliateId}")
+    public ResponseEntity<List<Appointments>> getByAffiliate(@PathVariable(value = "affiliateId") Integer affiliateId, HttpServletResponse response) {
+        List<Appointments> listAppointments = this.appointmentsService.getByAffiliateId(affiliateId);
+
+        if(listAppointments.size() == 0){
+            return new ResponseEntity<>(listAppointments, HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(listAppointments, HttpStatus.OK);
+    }
 
     @PostMapping(value="/appointments")
-    public Appointments createAppointments(@Valid @RequestBody Appointments appointments) throws WrongForeignIdException {
+    public ResponseEntity<Appointments> createAppointments(@Valid @RequestBody Appointments appointments) throws WrongForeignIdException {
         appointments = appointmentsService.checkAppointments(appointments);
-        return appointmentsService.createAppointments(appointments);
+        return new ResponseEntity<>(appointmentsService.createAppointments(appointments), HttpStatus.CREATED);
     }
 
     @PutMapping(value="/appointments/{appointmentsId}")
@@ -57,34 +78,18 @@ public class AppointmentsController {
         @Valid @PathVariable(value = "appointmentsId") Integer id, @RequestBody Appointments appointmentDetails
     ) throws WrongForeignIdException {
         appointmentDetails = appointmentsService.checkAppointments(appointmentDetails);
-        return ResponseEntity.of(appointmentsService.updateAppointments(id, appointmentDetails));
+        return appointmentsService.updateAppointments(id, appointmentDetails)
+                .map(value -> new ResponseEntity<>(value, HttpStatus.CREATED))
+                .orElseGet(() -> new ResponseEntity<>(null, HttpStatus.NOT_FOUND));
     }
 
-    @RequestMapping(value="/appointments/{appointmentsId}", method=RequestMethod.DELETE)
-    public void deleteAppointments(@PathVariable(value = "appointmentsId") Integer id) {
-        appointmentsService.deleteAppointments(id);
-    }
-
-    @RequestMapping(value="/appointments/getByDate/{date}", method=RequestMethod.GET)
-    public List<AppointmentsCount> getByDate(
-        @PathVariable(value = "date") @DateTimeFormat(pattern = "dd-MM-yyyy")Date date, HttpServletResponse response
-    ) {
-        List<AppointmentsCount> listAppointments = appointmentsService.getByDate(date);
-
-        if(listAppointments.size() == 0){
+    @DeleteMapping(value="/appointments/{appointmentsId}")
+    public void deleteAppointments(@PathVariable(value = "appointmentsId") Integer id, HttpServletResponse response) {
+        if(appointmentsService.deleteAppointments(id)){
+            response.setStatus(HttpStatus.OK.value());
+        } else {
             response.setStatus(HttpStatus.NO_CONTENT.value());
         }
-        return listAppointments;
-    }
-
-    @RequestMapping(value="/appointments/getByAffiliate/{affiliateId}", method=RequestMethod.GET)
-    public List<Appointments> getByAffiliate(@PathVariable(value = "affiliateId") Integer affiliateId, HttpServletResponse response) {
-        List<Appointments> listAppointments = this.appointmentsService.getByAffiliateId(affiliateId);
-
-        if(listAppointments.size() == 0){
-            response.setStatus(HttpStatus.NO_CONTENT.value());
-        }
-        return listAppointments;
     }
 
 }

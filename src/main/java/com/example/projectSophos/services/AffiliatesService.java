@@ -36,7 +36,7 @@ public class AffiliatesService {
     public Optional<Affiliates> updateAffiliates(Integer affiliateId, Affiliates affiliatesDetails) {
         Optional<Affiliates> opAffiliates = affiliatesRepository.findById(affiliateId);
 
-        if(!opAffiliates.isPresent()) {
+        if(opAffiliates.isEmpty()) {
             return opAffiliates;
         }
 
@@ -50,8 +50,14 @@ public class AffiliatesService {
     }
 
     // DELETE
-    public void deleteAffiliates(Integer affiliatesId) {
-        affiliatesRepository.deleteById(affiliatesId);
+    public boolean deleteAffiliates(Integer id) {
+        if (affiliatesRepository.existsById(id)) {
+            affiliatesRepository.deleteById(id);
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
 }

@@ -22,33 +22,38 @@ public class AffiliatesController {
     AffiliatesService affiliatesService;
 
     @GetMapping(value="/affiliates")
-    public List<Affiliates> getList(HttpServletResponse response){
+    public ResponseEntity<List<Affiliates>> getList(HttpServletResponse response){
         List<Affiliates> listAffiliates = affiliatesService.getAffiliates();
         if(listAffiliates.size() == 0){
-            response.setStatus(HttpStatus.NO_CONTENT.value());
+            return new ResponseEntity<>(listAffiliates, HttpStatus.NO_CONTENT);
         }
-        return listAffiliates;
+        return new ResponseEntity<>(listAffiliates, HttpStatus.OK);
     }
 
     @GetMapping(value="/affiliates/{affiliateId}")
     public ResponseEntity<Affiliates> getById(@PathVariable(value = "affiliateId") Integer id) {
-        Optional<Affiliates> affiliates = affiliatesService.getById(id);
-        return ResponseEntity.of(affiliates);
+        return ResponseEntity.of(affiliatesService.getById(id));
     }
 
     @PostMapping(value="/affiliates")
-    public Affiliates createAffiliates(@Valid @RequestBody Affiliates affiliates) {
-        return affiliatesService.createAffiliates(affiliates);
+    public ResponseEntity<Affiliates> createAffiliates(@Valid @RequestBody Affiliates affiliates) {
+        return new ResponseEntity<>(affiliatesService.createAffiliates(affiliates), HttpStatus.CREATED);
     }
 
     @PutMapping(value="/affiliates/{affiliatesId}")
     public ResponseEntity<Affiliates> updateAffiliates(@Valid @PathVariable(value = "affiliatesId") Integer id, @RequestBody Affiliates affiliateDetails) {
-        return ResponseEntity.of(affiliatesService.updateAffiliates(id, affiliateDetails));
+        return affiliatesService.updateAffiliates(id, affiliateDetails)
+                .map(value -> new ResponseEntity<>(value, HttpStatus.CREATED))
+                .orElseGet(() -> new ResponseEntity<>(null, HttpStatus.NOT_FOUND));
     }
 
     @DeleteMapping(value="/affiliates/{affiliateId}")
-    public void deleteAffiliates(@PathVariable(value = "affiliateId") Integer id) {
-        affiliatesService.deleteAffiliates(id);
+    public void deleteAffiliates(@PathVariable(value = "affiliateId") Integer id, HttpServletResponse response) {
+        if(affiliatesService.deleteAffiliates(id)){
+            response.setStatus(HttpStatus.OK.value());
+        } else {
+            response.setStatus(HttpStatus.NO_CONTENT.value());
+        };
     }
 
 }

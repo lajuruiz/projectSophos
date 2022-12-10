@@ -36,14 +36,14 @@ public class AppointmentsService {
         int testId = appointments.getTest().getId();
         Optional<Tests> test = testsRepository.findById(testId);
 
-        if(! test.isPresent()){
+        if(test.isEmpty()){
             throw new WrongForeignIdException("test_id = '" + testId + "' does not exist");
         }
 
         int affiliateId = appointments.getAffiliate().getId();
         Optional<Affiliates> affiliate = affiliatesRepository.findById(affiliateId);
 
-        if(! affiliate.isPresent()){
+        if(affiliate.isEmpty()){
             throw new WrongForeignIdException("affiliate_id = '" + affiliateId + "' does not exist");
         }
 
@@ -61,11 +61,18 @@ public class AppointmentsService {
         return appointmentsRepository.findById(id);
     }
 
+    public List<AppointmentsCount> getByDate(Date date) {
+        return appointmentsRepository.countTotalAffiliatesByDate(date);
+    }
+
+    public List<Appointments> getByAffiliateId(Integer affiliateId) {
+        return appointmentsRepository.findByAffiliate_Id(affiliateId);
+    }
     // UPDATE
     public Optional<Appointments> updateAppointments(Integer appointmentId, Appointments appointmentsDetails) {
         Optional<Appointments> opAppointments = appointmentsRepository.findById(appointmentId);
 
-        if(!opAppointments.isPresent()) {
+        if(opAppointments.isEmpty()) {
             return opAppointments;
         }
 
@@ -80,16 +87,13 @@ public class AppointmentsService {
     }
 
     // DELETE
-    public void deleteAppointments(Integer appointmentsId) {
-        appointmentsRepository.deleteById(appointmentsId);
-    }
-
-    public List<AppointmentsCount> getByDate(Date date) {
-        return appointmentsRepository.countTotalAffiliatesByDate(date);
-    }
-
-    public List<Appointments> getByAffiliateId(Integer affiliateId) {
-        return appointmentsRepository.findByAffiliate_Id(affiliateId);
+    public boolean deleteAppointments(Integer id) {
+        if (appointmentsRepository.existsById(id)) {
+            appointmentsRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

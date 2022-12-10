@@ -18,36 +18,40 @@ public class TestsController {
     @Autowired
     TestsService testsService;
 
-    @RequestMapping(value="/tests", method=RequestMethod.GET)
-    public List<Tests> getList(HttpServletResponse response) {
+    @GetMapping(value="/tests")
+    public ResponseEntity<List<Tests>> getList(HttpServletResponse response) {
         List<Tests> listTests = testsService.getTests();
         if(listTests.size() == 0){
+            return new ResponseEntity<>(listTests, HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(listTests, HttpStatus.OK);
+    }
+
+    @GetMapping(value="/tests/{testsId}")
+    public ResponseEntity<Tests> getById(@PathVariable(value = "testsId") Integer id) {
+        return ResponseEntity.of(testsService.getById(id));
+    }
+
+    @PostMapping(value="/tests")
+    public ResponseEntity<Tests> createTests(@Valid @RequestBody Tests tests) {
+        return new ResponseEntity<>(testsService.createTests(tests), HttpStatus.CREATED);
+    }
+
+    @PutMapping(value="/tests/{testsId}")
+    public ResponseEntity<Tests> updateTests(@Valid @PathVariable(value = "testsId") Integer id, @RequestBody Tests testDetails) {
+        return testsService.updateTests(id, testDetails)
+                .map(value -> new ResponseEntity<>(value, HttpStatus.CREATED))
+                .orElseGet(() -> new ResponseEntity<>(null, HttpStatus.NOT_FOUND));
+    }
+
+    @DeleteMapping(value="/tests/{testsId}")
+    public void deleteTests(@PathVariable(value = "testsId") Integer id, HttpServletResponse response) {
+        if(testsService.deleteTests(id)){
+            response.setStatus(HttpStatus.OK.value());
+        } else {
             response.setStatus(HttpStatus.NO_CONTENT.value());
         }
-        return listTests;
-    }
-
-    @RequestMapping(value="/tests/{testsId}", method=RequestMethod.GET)
-    public ResponseEntity<Tests> getById(@PathVariable(value = "testsId") Integer id) {
-        Optional<Tests> tests = testsService.getById(id);
-        return ResponseEntity.of(tests);
-    }
-
-    @RequestMapping(value="/tests", method=RequestMethod.POST)
-    public Tests createTests(@Valid @RequestBody Tests tests) {
-        return testsService.createTests(tests);
-    }
-
-
-    @RequestMapping(value="/tests/{testsId}", method=RequestMethod.PUT)
-    public ResponseEntity<Tests> updateTests(@Valid @PathVariable(value = "testsId") Integer id, @RequestBody Tests testDetails) {
-        return ResponseEntity.of(testsService.updateTests(id, testDetails));
-    }
-
-
-    @RequestMapping(value="/tests/{testsId}", method=RequestMethod.DELETE)
-    public void deleteTests(@PathVariable(value = "testsId") Integer id) {
-        testsService.deleteTests(id);
     }
 
 }

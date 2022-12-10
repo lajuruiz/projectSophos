@@ -31,7 +31,7 @@ public class TestsService {
     public Optional<Tests> updateTests(Integer testId, Tests testsDetails) {
         Optional<Tests> opTests = testsRepository.findById(testId);
 
-        if(!opTests.isPresent()) {
+        if(opTests.isEmpty()) {
             return opTests;
         }
 
@@ -44,7 +44,12 @@ public class TestsService {
     }
 
     // DELETE
-    public void deleteTests(Integer testsId) {
-        testsRepository.deleteById(testsId);
+    public boolean deleteTests(Integer id) {
+        if (testsRepository.existsById(id)) {
+            testsRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 }
