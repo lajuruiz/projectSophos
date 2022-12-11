@@ -49,7 +49,7 @@ public class AppointmentsService {
 
         appointments.setTest(test.get());
         appointments.setAffiliate(affiliate.get());
-        return appointmentsRepository.save(appointments);
+        return appointments;
     }
 
     // READ
