@@ -29,6 +29,15 @@ public class Affiliates {
     @NotBlank
     private String mail;
 
+    public Affiliates() {};
+
+    public Affiliates(Integer id, String name, Integer age, String mail) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+        this.mail = mail;
+    };
+
     public Integer getId() {
         return id;
     }

@@ -39,6 +39,16 @@ public class Appointments {
     @NotNull
     private Affiliates affiliate;
 
+    public Appointments() {};
+
+    public Appointments(Integer id, Date date, Date hour, Tests test, Affiliates affiliate) {
+        this.id = id;
+        this.date = date;
+        this.hour = hour;
+        this.test = test;
+        this.affiliate = affiliate;
+    };
+
 
     public Integer getId() {
         return id;
