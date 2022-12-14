@@ -1,7 +1,6 @@
 package com.example.projectSophos.services;
 
 import com.example.projectSophos.entities.Affiliates;
-import com.example.projectSophos.entities.Tests;
 import com.example.projectSophos.repositories.AffiliatesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

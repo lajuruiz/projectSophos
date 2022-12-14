@@ -41,7 +41,7 @@ public class AppointmentsController {
 
     @GetMapping(value="/appointments/getByDate/{date}")
     public ResponseEntity<List<AppointmentsCount>> getByDate(
-            @PathVariable(value = "date") @DateTimeFormat(pattern = "dd-MM-yyyy")Date date, HttpServletResponse response
+            @PathVariable(value = "date") @DateTimeFormat(pattern = "dd-MM-yyyy")Date date
     ) {
         List<AppointmentsCount> listAppointments = appointmentsService.getByDate(date);
 
@@ -52,7 +52,7 @@ public class AppointmentsController {
     }
 
     @GetMapping(value="/appointments/getByAffiliate/{affiliateId}")
-    public ResponseEntity<List<Appointments>> getByAffiliate(@PathVariable(value = "affiliateId") Integer affiliateId, HttpServletResponse response) {
+    public ResponseEntity<List<Appointments>> getByAffiliate(@PathVariable(value = "affiliateId") Integer affiliateId) {
         List<Appointments> listAppointments = this.appointmentsService.getByAffiliateId(affiliateId);
 
         if(listAppointments.size() == 0){

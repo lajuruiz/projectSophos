@@ -50,6 +50,4 @@ public class Tests {
     public void setDescription(String description) {
         this.description = description;
     }
-
-
 }
